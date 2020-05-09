@@ -7,7 +7,7 @@ Here are some things you need to change if you are interested in forking:
 # Channel and Role ID's
 This specific bot was made for Poco Gang in mind. Thus, it calls for specific ID's for channels and roles. I would assume since you are creating a new bot, that the bot would not have access to those channels, so you need to change them to fit your server
 
-##Commands where these occur:
+## Commands where these occur:
 - All of the Events
 - All of the Moderator Commands
 - selfRole command
