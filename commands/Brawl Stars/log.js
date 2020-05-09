@@ -81,6 +81,7 @@ exports.run = (bot, message, args) => {
   bot.emojis.cache.find(e => e.name === "Leaderboard10" && e.guild.id === "707060962347450389"),
 ]
   user.findOne({id: message.author.id}, async (err, res) => {
+    if (message.channel.id !== "707127658911236126") return message.channel.send(new Discord.MessageEmbed().setColor("RED").setDescription("<:Carl:706028393426321519> You are not in the right channel! Go to <#707127658911236126> to use this command!"))
     if (!res && !args[0]) {
   const embed3 = new Discord.MessageEmbed()
   .setDescription("<:Carl:706028393426321519> **You don't have a saved player tag!**\n\nSteps to Link Brawl Stars with Discord:\n------------------\n\n1. Go to Brawl Stars\n2. Click on your Name\n3. Copy your Player Tag (Under Profile Picture) and do **`p!sync [player id]`** to link to Discord!")
