@@ -1,5 +1,6 @@
 const Discord = require('discord.js')
 
+
 exports.run = async (bot, message, args) => {
   if (message.author.id !== '262410813254402048') return;
   const channel = bot.channels.cache.get("706017850527318028")
