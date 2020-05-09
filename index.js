@@ -6,7 +6,6 @@ bot.commands = new Discord.Collection()
 bot.aliases = new Discord.Collection();
 
 
-
 require('dotenv').config()
 
 const http = require('http');
