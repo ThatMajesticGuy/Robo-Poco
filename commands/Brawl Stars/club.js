@@ -5,6 +5,7 @@ const Brawlstars = require("brawlstars.js")
 const token = process.env.BS_KEY
 const client = new Brawlstars.Client(token)
 
+
 exports.run = async (bot, message, args) => {
   if (message.channel.id !== "707127658911236126") return message.channel.send(new Discord.MessageEmbed().setColor("RED").setDescription("<:Carl:706028393426321519> You are not in the right channel! Go to <#707127658911236126> to use this command!"))
   user.findOne({id: message.author.id}, async (err, res) => {
