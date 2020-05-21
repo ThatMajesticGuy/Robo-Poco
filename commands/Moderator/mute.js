@@ -8,10 +8,10 @@ exports.run = (bot, message, args) => {
   
   let reason = message.content.split(" ").slice(2).join(" ")
   
-  let member = message.mentions.members.first() || message.guild.members.cache.find(m => m.user.username === args[0]) || message.guild.members.cache.find(m => m.user.id === args[0])
-  if (!member) return message.channel.send(new Discord.MessageEmbed().setColor("RED").setDescription("<:Spike:706028970117693440> You did not specify a member! Please either **Put a Username, ID or mention a user** to mute them!"))
+  let member = message.mentions.members.first() || message.guild.members.cache.find(m => m.user.username === args[0]) || message.guild.members.cache.find(m => m.user.id === args[0]) || "Unknown"
+  if (!member || member === "Unknown") return message.channel.send(new Discord.MessageEmbed().setColor("RED").setDescription("<:Spike:706028970117693440> You did not specify a member! Please either **Put a Username, ID or mention a user** to mute them!"))
   
-  if (member.id === message.author.id) return message.channel.send(new Discord.MessageEmbed().setColor("RED").setDescription("<:Spike:706028970117693440> But I don't want to mute you b-b-baka!"))
+  if (member.user.id === message.author.id) return message.channel.send(new Discord.MessageEmbed().setColor("RED").setDescription("<:Spike:706028970117693440> But I don't want to mute you b-b-baka!"))
   
   if (member.hasPermission("MANAGE_MESSAGES")) return message.channel.send(new Discord.MessageEmbed().setColor("RED").setDescription(`<:Spike:706028970117693440> I cannot mute **${member.user.username}**! Are they a higher role than me?`))
   
