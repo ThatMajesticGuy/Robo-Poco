@@ -1,36 +1,64 @@
 const Discord = require('discord.js');
 
-exports.run = (bot, message, args) => {
+exports.run = (bot, message, args) =>  {
   if (!message.member.roles.cache.has("565473889388331038") && message.author.id !== "262410813254402048") return message.channel.send(new Discord.MessageEmbed().setTitle("<:Poco:706022277090770985> Hey! You broke my guitar!").setColor("RED").setDescription("\u200b\n**You cannot run this command, as you are not a moderator!**\n\nIf anyone is breaking the rules, then please ping them!"))
+  const member = message.mentions.members.first() || message.guild.members.cache.find(m => m.user.username === args[0]) || message.guild.members.cache.find(m => m.user.id === args[0].toLowerCase()) || "Unknown"
   
-  let muteRole = message.guild.roles.cache.get("586820736124190750")
-  let capo = message.guild.roles.cache.get("566636262065176588")
-  
-  let member = message.mentions.members.first() || message.guild.members.cache.find(m => m.user.username === args[0]) || message.guild.members.cache.find(m => m.user.id === args[0])
-  if (!member) return message.channel.send(new Discord.MessageEmbed().setColor("RED").setDescription("<:Spike:706028970117693440> You did not specify a member! Please either **Put a Username, ID or mention a user** to unmute them!"))
-  
-  member.roles.remove(muteRole).catch(err => {
-    if (err) {
-      message.channel.send(new Discord.MessageEmbed().setColor("RED").setDescription(`<:Spike:706028970117693440> I cannot unmute **${member.user.username}**! Are they a higher role than me?`))
-      console.log(err)
-      } else message.channel.send(new Discord.MessageEmbed().setColor('4CEF8B').setDescription(`<:Spike:706028970117693440> Sucessfully Unuted ${member.user.username}!`))
+  if (!member || member === "Unknown") return message.channel.send(new Discord.MessageEmbed().setColor("RED").setDescription("<:Frank:706028393275326485> Please provide the **Username**, **ID**, or **Mention of the user** you want to warn!"))
+  if (!args[1]) return message.channel.send(new Discord.MessageEmbed().setColor("RED").setDescription("<:Frank:706028393275326485> You did not specify which warning to remove"))
+  if (!parseInt(args[1])) return message.channel.send(new Discord.MessageEmbed().setColor("RED").setDescription("<:Frank:706028393275326485> That warning number is not a valid number!"))
+  require('../../models/warns.js').findOne({id: member.user.id}, (err, res) => { 
+    if (!res) return message.channel.send(new Discord.MessageEmbed().setColor("RED").setDescription("<:Frank:706028393275326485> That user has no warns!"))
+    if (parseInt(args[1]) > res.warns.length) return message.channel.send(new Discord.MessageEmbed().setColor("RED").setDescription("<:Frank:706028393275326485> That number is more than their warns!"))
+    
+
+    let reason = res.warns[parseInt(args[1]) - 1]
+    if (reason) reason = res.warns[parseInt(args[1]) - 1].reason
+    if (!reason) reason = "Unknown Reason"
+    
+    message.channel.send(new Discord.MessageEmbed().setColor("RED").setDescription(`Are you sure you want to remove this warning?\n\nWarning #${args[1]}: ${reason}`)).then(msg => {
+      msg.react("👍").then(() => msg.react("👎"))
+      const filter = (reaction, user) => {
+	return ['👍', '👎'].includes(reaction.emoji.name) && user.id === message.author.id;
+};
+
+const collector = msg.createReactionCollector(filter, { time: 30000 });
+
+collector.on('collect', (reaction, user) => {
+  if (reaction.emoji.name === "👎")  {
+    msg.delete()
+    message.channel.send(new Discord.MessageEmbed().setColor("RED").setDescription("<:Frank:706028393275326485> Cancelled the Unwarn"))
+    collector.stop()
+  }
+  if (reaction.emoji.name === "👍") {
+    collector.stop()
+    message.channel.send(new Discord.MessageEmbed().setColor("4CEF8B").setDescription("<:Frank:706028393275326485> Sucessfully removed the warn!"))
+    if (res.warns.length === 1) {
+      require('../../models/warns.js').deleteOne({id: member.user.id}, (err, out) => {
+     if (err) console.log(err)
+    })
+    } else {
+      require('../../models/warns.js').updateOne({id: member.user.id}, {$pull: {warns: res.warns[parseInt(args[1]) - 1]}}, (err, out) => {
+     if (err) console.log(err)
+    })
+    }
+  }
+});
+  collector.on('end', collected => {
+	if (collected.size === 0) {
+    msg.delete()
+    message.channel.send(new Discord.MessageEmbed().setColor("RED").setDescription("<:Frank:706028393275326485> **You did not respond in time. Cancelled the command**"))
+    return;
+  }
+});
+    })
   });
-  member.roles.add(capo)
-  const embed = new Discord.MessageEmbed()
-  .setTitle("Unmute")
-  .setColor("4CEF8B")
-  .setDescription(`User: **${member.user.username}#${member.user.discriminator}**\nID: **${member.user.id}**\nMod: **${message.author.tag}**`)
-  bot.channels.cache.get("706646165189296189").send(embed)
-  
-  message.channel.send(new Discord.MessageEmbed().setColor('4CEF8B').setDescription(`<:Spike:706028970117693440> Sucessfully Unmted ${member.user.username}!`))
-  
 }
 
 exports.help = {
-  name: "unmute",
-  description: "Unmutes a user",
-  usage: "unmute [Username, ID, or User Mention]",
+  name: 'unwarn',
+  description: "Removes a warn from a user",
+  usage: "unwarn [user] [warn #]",
   category: "Moderator"
 }
-
 exports.aliases = []
