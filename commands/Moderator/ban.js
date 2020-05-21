@@ -7,7 +7,7 @@ exports.run = (bot, message) => {
   
   let reason;
   
-  const member = message.mentions.members.first() || message.guild.members.cache.find(m => m.user.username.toLowerCase() === args)
+  const member = message.mentions.members.first() || message.guild.members.cache.find(m => m.user.username.toLowerCase() === args.toLowerCase()) || message.guild.members.cache.find(m => m.user.id=== args) || "Unknown"
 
   if (Number(args) && args.length === 18) {
     if (message.guild.members.cache.has(args)) {
@@ -24,7 +24,7 @@ exports.run = (bot, message) => {
       return message.channel.send(new Discord.MessageEmbed().setColor("RED").setDescription(`<:Frank:706028393275326485> Will Ban the user with the ID of **${args}** when they join`))
     }
   }
-  if (!member) return message.channel.send(new Discord.MessageEmbed().setColor("RED").setDescription("<:Frank:706028393275326485> Please provide the **Username**, **ID**, or **Mention of the user** you want to ban!"))
+  if (!member || member === "Unknown") return message.channel.send(new Discord.MessageEmbed().setColor("RED").setDescription("<:Frank:706028393275326485> Please provide the **Username**, **ID**, or **Mention of the user** you want to ban!"))
   if (member.id === message.author.id) return message.channel.send(new Discord.MessageEmbed().setColor("RED").setDescription("<:Frank:706028393275326485> But I don't want to ban you b-b-baka!"))
   if (!member.banable) return message.channel.send(new Discord.MessageEmbed().setColor("RED").setDescription("<:Frank:706028393275326485> I cannot ban this user! Are they a mod/admin, or are they another bot? Are they a higher role than me? AAAAAAAAAAAAA"))
   else ban()
