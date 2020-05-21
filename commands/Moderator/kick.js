@@ -7,9 +7,9 @@ exports.run = (bot, message) => {
   
   let reason;
   
-  const member = message.mentions.members.first() || message.guild.members.cache.find(m => m.user.username.toLowerCase() === args) || message.guild.members.cache.find(m => m.user.id === args)
+  const member = message.mentions.members.first() || message.guild.members.cache.find(m => m.user.username.toLowerCase() === args.toLowerCase()) || message.guild.members.cache.find(m => m.user.id === args) || "Unknown"
 
-  if (!member) return message.channel.send(new Discord.MessageEmbed().setColor("RED").setDescription("<:Frank:706028393275326485> Please provide the **Username**, **ID**, or **Mention of the user** you want to kick!"))
+  if (!member || member === "Unknown") return message.channel.send(new Discord.MessageEmbed().setColor("RED").setDescription("<:Frank:706028393275326485> Please provide the **Username**, **ID**, or **Mention of the user** you want to kick!"))
   if (!member.kickable) return message.channel.send(new Discord.MessageEmbed().setColor("RED").setDescription("<:Frank:706028393275326485> I cannot kick this user! Are they a mod/admin, or are they another bot? Are they a higher role than me? AAAAAAAAAAAAA"))
   else kick()
   
@@ -21,7 +21,7 @@ exports.run = (bot, message) => {
     reason = message.content.split(" ").slice(2).join(" ")
     if (reason.length === 0) reason = "No Reason"
       
-      new require('../../models/logs.js')({
+    new require('../../models/logs.js')({
     case: "Kick",
     num: tag,
     user: member.user.tag,
